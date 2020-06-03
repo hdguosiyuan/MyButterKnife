@@ -1,0 +1,5 @@
+rootProject.name='MyButterKnife'
+include ':app'
+include ':annotation'
+include ':annotation_processor'
+include ':butterknife'

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyButterKnife</string>
+    <string name="test_text1">test text string first</string>
+    <string name="test_text2">test text string two</string>
+</resources>
