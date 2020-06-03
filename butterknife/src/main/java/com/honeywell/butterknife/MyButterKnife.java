@@ -5,6 +5,11 @@ import java.lang.reflect.InvocationTargetException;
 
 public class MyButterKnife {
 
+    /**
+     * 通过反射的方式运行***$$ViewBinder
+     * 达到运行findViewById方法
+     * @param activity
+     */
     public static void bind(Object activity){
         String name = activity.getClass().getName();
         String bindName = name+"$$ViewBinder";

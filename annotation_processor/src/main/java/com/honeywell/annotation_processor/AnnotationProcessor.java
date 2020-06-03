@@ -55,6 +55,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         logUtil("processor process ============================");
         Map<TypeElement, ElementClassify> parseTargets = classifyElementWithClass(roundEnvironment);
+        //如果map为空说明没有注解 什么都不用做
         if (parseTargets.size() <= 0) {
             return false;
         }
@@ -62,6 +63,7 @@ public class AnnotationProcessor extends AbstractProcessor {
         String newClassName;
         String packageName;
         Writer writer = null;
+        //遍历map  为每一个acitvity生成$$ViewBinder文件
         while (iterator.hasNext()) {
             TypeElement classElement = iterator.next();
             ElementClassify elementClassify = parseTargets.get(classElement);
@@ -88,6 +90,14 @@ public class AnnotationProcessor extends AbstractProcessor {
         return false;
     }
 
+    /**
+     * 生成新的class文件
+     * @param packageName
+     * @param newClassName
+     * @param classElement
+     * @param elementClassify
+     * @return
+     */
     private StringBuffer getStringBuffer(String packageName, String newClassName, TypeElement classElement,
                                          ElementClassify elementClassify) {
         StringBuffer stringBuffer = new StringBuffer();
@@ -132,21 +142,35 @@ public class AnnotationProcessor extends AbstractProcessor {
         return stringBuffer;
     }
 
+    /**
+     * 获取包名
+     * @param classElement
+     * @return
+     */
     private String getPackageName(Element classElement) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(classElement);
         return packageElement.getQualifiedName().toString();
     }
 
+    /**
+     * 声明注解器支持的java版本
+     * @return
+     */
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return processingEnv.getSourceVersion();
     }
 
+    /**
+     * 声明要处理的注解
+     * @return
+     */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotationSet = new HashSet<>();
         annotationSet.add(BindView.class.getCanonicalName());
         annotationSet.add(OnClick.class.getCanonicalName());
+        annotationSet.add(BindString.class.getCanonicalName());
         return annotationSet;
     }
 
@@ -165,11 +189,17 @@ public class AnnotationProcessor extends AbstractProcessor {
         for (Element viewElement : viewElementsAnnotatedWith) {
             //VariableElement可以理解为一个变量元素
             VariableElement variableElement = (VariableElement) viewElement;
+            //获取到变量所在的class节点
             TypeElement classElement = (TypeElement) variableElement.getEnclosingElement();
+            //先从map中取ElementClassify
             ElementClassify elementClassify = classElementMap.get(classElement);
+            //List用来存放注解的对象节点
             List<VariableElement> viewElements;
             if (elementClassify != null) {
+                //取出
                 viewElements = elementClassify.getViewElements();
+                logUtil("view list size="+viewElements.size());
+                //如果list为空 新建一个 并放入ElementClassify
                 if (viewElements == null) {
                     viewElements = new ArrayList<>();
                     elementClassify.setViewElements(viewElements);
@@ -179,9 +209,13 @@ public class AnnotationProcessor extends AbstractProcessor {
                 viewElements = new ArrayList<>();
                 elementClassify.setViewElements(viewElements);
                 if (!classElementMap.containsKey(classElement)) {
+                    //将activity节点和list对应起来
+                    logUtil("viewlist size ="+elementClassify.getViewElements().size());
                     classElementMap.put(classElement, elementClassify);
                 }
             }
+            logUtil(variableElement.getSimpleName().toString());
+            //将节点放入List
             viewElements.add(variableElement);
         }
 

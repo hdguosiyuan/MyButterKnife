@@ -7,11 +7,16 @@ import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
-
+/**
+ * 内部包含一个类中的所有带注解的元素
+ */
 public class ElementClassify {
 
+    //view的节点list
     public List<VariableElement> viewElements;
+    //onclick的节点list
     public List<ExecutableElement> methodElements;
+    //string的节点list
     public List<VariableElement> stringElements;
 
     public List<VariableElement> getStringElements() {
